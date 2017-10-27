@@ -33,8 +33,25 @@ class WechatController extends Controller
             // 打印微信发送过来的消息
             Log::info('wechat message', [$message]);
             $content = $message->Content;
-            if ($content == 1) {
-                return '1';
+            if (mb_strlen($content) > 30) $content = mb_substr($content, 0, 30);
+            $msgType = $message->MsgType;
+            $userId = $message->FromUserName;
+            if ($msgType == 'text') {
+                $data = [
+                    'key' => '85f4ddf07d984851b5b065e8e52f7f7c',
+                    'info' => $content,
+                    'userid' => $userId
+                ];
+                $response = \Requests::post('http://www.tuling123.com/openapi/api', [], $data);
+                if ($response->success) {
+                    $body = json_decode($response->body);
+                    Log::info('response', [$body]);
+                    if ($body->code == 100000) {
+                        return $body->text;
+                    }
+                } else {
+                    return '请求错误';
+                }
             } else {
                 return "欢迎学习 easy wechat！";
             }
