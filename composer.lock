@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "94647db821eb54d3a0fd198dacc4ae3f",
-    "content-hash": "e77673acfbcf16906148b1b7e9ad4186",
+    "hash": "df007e330453880d4ab34f3a175e6b5a",
+    "content-hash": "0abdd572622459af205b449c813e9341",
     "packages": [
         {
             "name": "barryvdh/laravel-ide-helper",
@@ -1627,6 +1627,52 @@
                 "php"
             ],
             "time": "2017-09-02 17:10:46"
+        },
+        {
+            "name": "overtrue/laravel-socialite",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/overtrue/laravel-socialite.git",
+                "reference": "df18aedf8c9d2a489575af624c2073199c621bd5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://files.phpcomposer.com/files/overtrue/laravel-socialite/df18aedf8c9d2a489575af624c2073199c621bd5.zip",
+                "reference": "df18aedf8c9d2a489575af624c2073199c621bd5",
+                "shasum": ""
+            },
+            "require": {
+                "overtrue/socialite": "~1.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Overtrue\\LaravelSocialite\\ServiceProvider"
+                    ],
+                    "aliases": {
+                        "Socialite": "Overtrue\\LaravelSocialite\\Socialite"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Overtrue\\LaravelSocialite\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "overtrue",
+                    "email": "anzhengchao@gmail.com"
+                }
+            ],
+            "description": "Social OAuth authentication for Laravel 5.",
+            "time": "2017-07-03 00:16:03"
         },
         {
             "name": "overtrue/laravel-wechat",

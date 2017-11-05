@@ -179,6 +179,7 @@ return [
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
         Overtrue\LaravelWechat\ServiceProvider::class,
+        Overtrue\LaravelSocialite\ServiceProvider::class,
     ],
 
     /*
@@ -230,6 +231,7 @@ return [
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         'EasyWeChat' => Overtrue\LaravelWeChat\Facade::class,
+        'Socialite' => Overtrue\LaravelSocialite\Socialite::class,
     ],
 
 ];
