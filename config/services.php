@@ -35,4 +35,10 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
 
+    'qq' => [
+        'client_id'     => '101435281',
+        'client_secret' => '28ae29e7420dede1332e56d7787bf4fe',
+        'redirect'      => 'http://api.wechat.grianchan.com/api/oauth/qq/callback',
+    ],
+
 ];
