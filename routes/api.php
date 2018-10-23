@@ -15,6 +15,3 @@ use Illuminate\Http\Request;
 //
 
 Route::any('/wechat', 'WechatController@serve');
-
-Route::get('/oauth/qq', 'AuthController@redirectToProvider');
-Route::get('/oauth/qq/callback', 'AuthController@handleProviderCallback');

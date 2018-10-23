@@ -9,57 +9,110 @@
 namespace App\Http\Controllers;
 
 
-use EasyWeChat\Foundation\Application;
-use EasyWeChat\Support\Collection;
+use EasyWeChat\Kernel\Messages\Message;
+use EasyWeChat\OfficialAccount\Application;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class WechatController extends Controller
 {
     public function serve(Application $wechat)
     {
-        Log::info('request arrived.'); # 注意：Log 为 Laravel 组件，所以它记的日志去 Laravel 日志看，而不是 EasyWeChat 日志
-
-        // 获取wechat对象
-
-        // 1. 从服务容器中直接取
-        $wechat = app('wechat');
-
-        // 2. 使用facede
-//        $wechat = EasyWeChat::server();
+        Log::debug('receive start ----');
         /**
          * @var Application $wechat
          */
-        $wechat->server->setMessageHandler(function($message){
-            // 打印微信发送过来的消息
-            Log::info('wechat message', [$message]);
-            $content = $message->Content;
-            if (mb_strlen($content) > 30) $content = mb_substr($content, 0, 30);
-            $msgType = $message->MsgType;
-            $userId = $message->FromUserName;
-            if ($msgType == 'text') {
-                $data = [
-                    'key' => '85f4ddf07d984851b5b065e8e52f7f7c',
-                    'info' => $content,
-                    'userid' => $userId
-                ];
-                $response = \Requests::post('http://www.tuling123.com/openapi/api', [], $data);
-                if ($response->success) {
-                    $body = json_decode($response->body);
-                    Log::info('response', [$body]);
-                    if ($body->code == 100000) {
-                        return $body->text;
-                    }
-                } else {
-                    return '请求错误';
-                }
-            } else {
-                return "欢迎学习 easy wechat！";
+        $wechat->server->push(function ($message) {
+            Log::info('wechat message', [collect($message)->toArray()]);
+            // $message
+            //  ToUserName
+            //  FromUserName
+            //  CreateTime
+            //  MsgType
+            //  Content
+            //  MsgId
+            $msg = collect($message);
+            if ($msg->get('MsgType') == 'text') {
+                return '上传带文字的图片, 将会识别图片中文字.';
             }
-            // 实质上是返回给微信服务器的消息
+            if ($msg->get('MsgType') == 'event') {
+                return '欢迎关注我的订阅号, 发送带文字的图片将识别图中文字.';
+            }
+            if ($msg->get('MsgType') == 'image') {
+                // MediaId
+                // PicUrl
+
+                $base64Img = base64_encode(\Requests::get($msg->get('PicUrl'))->body);
+                $queryRes = $this->getImgText($base64Img);
+                Log::debug('base64', [$base64Img, $msg->get('PicUrl'), $queryRes]);
+                $resStr = '';
+                foreach ($queryRes->get('words_result') as $key => $item) {
+                    if ($key) {
+                        $resStr .= "\n{$item['words']}";
+                    } else {
+                        $resStr .= "{$item['words']}";
+                    }
+                }
+
+                return $resStr;
+            }
+            return $msg->toJson();
         });
 
-        Log::info('return response.');
+        $response = $wechat->server->serve();
 
-        return $wechat->server->serve();
+        return $response;
+    }
+
+    /**
+     * @param $base64Img
+     * @return \Illuminate\Support\Collection
+     * [
+     *  'direction' => '', // 图像方向
+     *  'log_id' => '',
+     *  'words_result' => [
+     *      [
+     *          'words' => ''
+     *      ]
+     *   ], // 识别结果数组
+     *  'words_result_num' => '', // 识别结果数，表示words_result的元素个数
+     *  '+words' => '', // 识别结果字符串
+     *  'probability' => [] //识别结果中每一行的置信度值
+     * ]
+     * @throws \Exception
+     */
+    private function getImgText($base64Img)
+    {
+        $url = config('baidu.api.accurate_basic');
+        $access_token = $this->getBaiduToken();
+        $res = \Requests::post("$url?access_token=$access_token", [
+            'Content-Type' => 'application/x-www-form-urlencoded'
+        ], [
+            'image' => $base64Img,
+            'detect_direction' => 'false',
+            'probability' => 'false'
+        ]);
+        return collect(json_decode($res->body, true));
+    }
+
+    private function getBaiduToken()
+    {
+        if (Cache::has('baidu_token')) {
+            return Cache::get('baidu_token');
+        }
+        $url = config('baidu.token.url');
+        $grant_type = config('baidu.token.grant_type');
+        $client_id = config('baidu.token.client_id');
+        $client_secret = config('baidu.token.client_secret');
+        $response = \Requests::post("$url?grant_type=$grant_type&client_id=$client_id&client_secret=$client_secret");
+        $res = collect(json_decode($response->body, true));
+        if ($res->has('access_token')) {
+            Cache::set('baidu_token', $res->get('access_token'), $res->get('expires_in', 0));
+            return $res->get('access_token');
+        } else {
+            Log::error('get baidu token error', [$res->toArray()]);
+            throw new \Exception("get baidu token error, {$res->toJson()}");
+        }
     }
 }
