@@ -9,11 +9,21 @@
 namespace App\Http\Controllers;
 
 
+use App\Models\User;
+use App\Models\UserWechat;
+use App\Models\WechatAutoReceive;
+use App\Models\WechatMessage;
+use EasyWeChat\Kernel\Messages\Image;
 use EasyWeChat\Kernel\Messages\Message;
 use EasyWeChat\OfficialAccount\Application;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use PHPHtmlParser\Dom;
+use PHPQRCode\Constants;
+use Shelwei\QRCode;
 
 class WechatController extends Controller
 {
@@ -23,7 +33,7 @@ class WechatController extends Controller
         /**
          * @var Application $wechat
          */
-        $wechat->server->push(function ($message) {
+        $wechat->server->push(function ($message) use ($wechat) {
             Log::info('wechat message', [collect($message)->toArray()]);
             // $message
             //  ToUserName
@@ -33,11 +43,33 @@ class WechatController extends Controller
             //  Content
             //  MsgId
             $msg = collect($message);
+            $this->register($msg);
             if ($msg->get('MsgType') == 'text') {
-                return '上传带文字的图片, 将会识别图片中文字.';
+                if ($msg->get('Content') == 'm') {
+                    $imgs = $this->getMeiziImgs();
+                    // media_id
+                    // url
+                    Log::debug('img', [$imgs]);
+//                    $client = new Client(['verify' => false]);  //忽略SSL错误
+//                    $client->get($img, ['save_to' => $savePath]);  //保存远程url到文件
+//                    $uploadRes = $wechat->material->uploadImage($savePath);
+//                    Log::debug('$uploadRes', [$uploadRes]);
+//                    return new Image('FJggVYI2YxOOv8gvHG7R6O01ON1ZngXARg1TblkzA-P2rhK8G2KQ58BV24nP3s8m');
+//                    return $img;
+                    $res = '';
+                    foreach ($imgs as $key => $img) {
+                        $res .= "<a href=\"$img\">图片 {$key}</a>  ";
+                    }
+                    return $res;
+                }
+
+                $res = WechatAutoReceive::where('receive', $msg->get('Content'))->inRandomOrder()->value('send');
+                if (!$res) $res = WechatAutoReceive::where('receive', 'default')->inRandomOrder()->value('send');
+                if (!$res) $res = '上传带文字的图片, 将会识别图片中文字.';
+                return $res;
             }
             if ($msg->get('MsgType') == 'event') {
-                return '欢迎关注我的订阅号, 发送带文字的图片将识别图中文字.';
+                return WechatAutoReceive::where('receive', 'default')->inRandomOrder()->value('send');
             }
             if ($msg->get('MsgType') == 'image') {
                 // MediaId
@@ -63,6 +95,32 @@ class WechatController extends Controller
         $response = $wechat->server->serve();
 
         return $response;
+    }
+
+
+    private function register(Collection $msg)
+    {
+        /** @var UserWechat $userWechat */
+        if (!($userWechat = UserWechat::where('user_name', $msg->get('FromUserName'))->first())) {
+            $userWechat = User::create(['name' => $msg->get('FromUserName')])
+                ->userWechat()
+                ->create(
+                    [
+                        'user_name' => $msg->get('FromUserName'),
+                        'subscribed_at' => $msg->get('CreateTime')
+                    ]
+                );
+        }
+
+        // save message
+        WechatMessage::create([
+            'user_id' => $userWechat->user_id,
+            'from_user_name' => $userWechat->user_name,
+            'to_user_name' => $msg->get('ToUserName'),
+            'msg_type' => $msg->get('MsgType'),
+            'type' => 'receive',
+            'data' => $msg
+        ]);
     }
 
     /**
@@ -114,5 +172,28 @@ class WechatController extends Controller
             Log::error('get baidu token error', [$res->toArray()]);
             throw new \Exception("get baidu token error, {$res->toJson()}");
         }
+    }
+
+    private function getMeiziImgs()
+    {
+        $randomPage = random_int(1, 34);
+
+        $dom = $this->getMeiziHtml($randomPage);
+        $comments = $dom->find('.post-grid');
+        $imgs = [];
+        foreach ($comments as $comment) {
+            $img = $comment->find('img', 0)->getAttribute('src');
+            $img = str_replace('-548x300', '', $img);
+            $imgs[] = $img;
+        }
+        // get random page
+        return $imgs;
+    }
+
+    private function getMeiziHtml($page = 1)
+    {
+        $dom = new Dom();
+        $dom->loadFromUrl("https://qingbuyaohaixiu.com/page/$page");
+        return $dom;
     }
 }
