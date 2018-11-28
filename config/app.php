@@ -211,6 +211,7 @@ return [
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         'EasyWeChat' => Overtrue\LaravelWeChat\Facade::class,
+        'Image' => Intervention\Image\Facades\Image::class
     ],
 
 ];

@@ -4,8 +4,59 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "02b4543051f0ac6a28cd24cee2d30719",
+    "content-hash": "f9a6a5520556abad2872c2af2766992f",
     "packages": [
+        {
+            "name": "aferrandini/phpqrcode",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aferrandini/PHPQRCode.git",
+                "reference": "3c1c0454d43710ab5bbe19a51ad4cb41c22e3d46"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aferrandini/PHPQRCode/zipball/3c1c0454d43710ab5bbe19a51ad4cb41c22e3d46",
+                "reference": "3c1c0454d43710ab5bbe19a51ad4cb41c22e3d46",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://dl.laravel-china.org/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PHPQRCode": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ariel Ferrandini",
+                    "email": "arielferrandini@gmail.com",
+                    "homepage": "http://www.ferrandini.com/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHPQRCode porting and changed for PHP 5.3 compatibility",
+            "homepage": "https://github.com/aferrandini/PHPQRCode",
+            "keywords": [
+                "barcode",
+                "php",
+                "qrcode"
+            ],
+            "abandoned": "endroid/qr-code",
+            "time": "2013-07-08T09:39:08+00:00"
+        },
         {
             "name": "asm89/stack-cors",
             "version": "1.2.0",
@@ -1030,6 +1081,82 @@
             "time": "2017-03-20T17:10:46+00:00"
         },
         {
+            "name": "intervention/image",
+            "version": "2.4.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Intervention/image.git",
+                "reference": "e82d274f786e3d4b866a59b173f42e716f0783eb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Intervention/image/zipball/e82d274f786e3d4b866a59b173f42e716f0783eb",
+                "reference": "e82d274f786e3d4b866a59b173f42e716f0783eb",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://dl.laravel-china.org/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "guzzlehttp/psr7": "~1.1",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "~0.9.2",
+                "phpunit/phpunit": "^4.8 || ^5.7"
+            },
+            "suggest": {
+                "ext-gd": "to use GD library based image processing.",
+                "ext-imagick": "to use Imagick based image processing.",
+                "intervention/imagecache": "Caching extension for the Intervention Image library"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.4-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Intervention\\Image\\ImageServiceProvider"
+                    ],
+                    "aliases": {
+                        "Image": "Intervention\\Image\\Facades\\Image"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Intervention\\Image\\": "src/Intervention/Image"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oliver Vogel",
+                    "email": "oliver@olivervogel.com",
+                    "homepage": "http://olivervogel.com/"
+                }
+            ],
+            "description": "Image handling and manipulation library with support for Laravel integration",
+            "homepage": "http://image.intervention.io/",
+            "keywords": [
+                "gd",
+                "image",
+                "imagick",
+                "laravel",
+                "thumbnail",
+                "watermark"
+            ],
+            "time": "2018-05-29T14:19:03+00:00"
+        },
+        {
             "name": "jakub-onderka/php-console-color",
             "version": "v0.2",
             "source": {
@@ -1131,16 +1258,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v5.7.9",
+            "version": "v5.7.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "172f69f86bb86e107fb9fafff293b4b01291cf05"
+                "reference": "52ee19c53c4fcd7fea8a83aacae5b8bc212ae19b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/172f69f86bb86e107fb9fafff293b4b01291cf05",
-                "reference": "172f69f86bb86e107fb9fafff293b4b01291cf05",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/52ee19c53c4fcd7fea8a83aacae5b8bc212ae19b",
+                "reference": "52ee19c53c4fcd7fea8a83aacae5b8bc212ae19b",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -1228,6 +1355,7 @@
                 "doctrine/dbal": "Required to rename columns and drop SQLite columns (^2.6).",
                 "ext-pcntl": "Required to use all features of the queue worker.",
                 "ext-posix": "Required to use all features of the queue worker.",
+                "filp/whoops": "Required for friendly error pages in development (^2.1.4).",
                 "fzaninotto/faker": "Required to use the eloquent factory builder (^1.4).",
                 "guzzlehttp/guzzle": "Required to use the Mailgun and Mandrill mail drivers and the ping methods on schedules (^6.0).",
                 "laravel/tinker": "Required to use the tinker console command (^1.0).",
@@ -1275,7 +1403,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2018-10-09T13:28:28+00:00"
+            "time": "2018-10-24T12:50:20+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -2118,6 +2246,62 @@
             "time": "2018-01-21T07:42:36+00:00"
         },
         {
+            "name": "predis/predis",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nrk/predis.git",
+                "reference": "f0210e38881631afeafb56ab43405a92cafd9fd1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nrk/predis/zipball/f0210e38881631afeafb56ab43405a92cafd9fd1",
+                "reference": "f0210e38881631afeafb56ab43405a92cafd9fd1",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://dl.laravel-china.org/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "php": ">=5.3.9"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.8"
+            },
+            "suggest": {
+                "ext-curl": "Allows access to Webdis when paired with phpiredis",
+                "ext-phpiredis": "Allows faster serialization and deserialization of the Redis protocol"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Predis\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Daniele Alessandri",
+                    "email": "suppakilla@gmail.com",
+                    "homepage": "http://clorophilla.net"
+                }
+            ],
+            "description": "Flexible and feature-complete Redis client for PHP and HHVM",
+            "homepage": "http://github.com/nrk/predis",
+            "keywords": [
+                "nosql",
+                "predis",
+                "redis"
+            ],
+            "time": "2016-06-16T16:22:20+00:00"
+        },
+        {
             "name": "psr/cache",
             "version": "1.0.1",
             "source": {
@@ -2609,6 +2793,63 @@
                 "sockets"
             ],
             "time": "2016-10-13T00:11:37+00:00"
+        },
+        {
+            "name": "shelwei/qrcode-terminal",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/shelwei/qrcode-terminal.git",
+                "reference": "9c93a16ffe874cee41fbd87130ea68003b96721c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/shelwei/qrcode-terminal/zipball/9c93a16ffe874cee41fbd87130ea68003b96721c",
+                "reference": "9c93a16ffe874cee41fbd87130ea68003b96721c",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://dl.laravel-china.org/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "aferrandini/phpqrcode": "1.0.1"
+            },
+            "bin": [
+                "qrcode-terminal"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.0.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Shelwei\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Shelwin Wei",
+                    "email": "wxfans@gmail.com"
+                }
+            ],
+            "description": "QRCodes, in the terminal by PHP",
+            "keywords": [
+                "ansi",
+                "ascii",
+                "console",
+                "php",
+                "qrcode"
+            ],
+            "time": "2016-02-27T07:44:17+00:00"
         },
         {
             "name": "spatie/laravel-permission",
@@ -4741,16 +4982,16 @@
         },
         {
             "name": "filp/whoops",
-            "version": "2.3.0",
+            "version": "2.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filp/whoops.git",
-                "reference": "a9f129b99df316f847584d482c89c14a9f796e2b"
+                "reference": "bc0fd11bc455cc20ee4b5edabc63ebbf859324c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filp/whoops/zipball/a9f129b99df316f847584d482c89c14a9f796e2b",
-                "reference": "a9f129b99df316f847584d482c89c14a9f796e2b",
+                "url": "https://api.github.com/repos/filp/whoops/zipball/bc0fd11bc455cc20ee4b5edabc63ebbf859324c7",
+                "reference": "bc0fd11bc455cc20ee4b5edabc63ebbf859324c7",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -4804,7 +5045,7 @@
                 "throwable",
                 "whoops"
             ],
-            "time": "2018-10-20T09:00:00+00:00"
+            "time": "2018-10-23T09:00:00+00:00"
         },
         {
             "name": "fzaninotto/faker",
@@ -5468,16 +5709,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "6.1.1",
+            "version": "6.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "b097681a19a48e52706f57e47a09594bac4f7cab"
+                "reference": "4d3ae9b21a7d7e440bd0cf65565533117976859f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/b097681a19a48e52706f57e47a09594bac4f7cab",
-                "reference": "b097681a19a48e52706f57e47a09594bac4f7cab",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/4d3ae9b21a7d7e440bd0cf65565533117976859f",
+                "reference": "4d3ae9b21a7d7e440bd0cf65565533117976859f",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -5533,7 +5774,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-10-18T09:01:38+00:00"
+            "time": "2018-10-23T05:59:32+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -5750,16 +5991,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.4.1",
+            "version": "7.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "c5a120ade60992bd671a912188ee9ee9f8083bbd"
+                "reference": "c151651fb6ed264038d486ea262e243af72e5e64"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c5a120ade60992bd671a912188ee9ee9f8083bbd",
-                "reference": "c5a120ade60992bd671a912188ee9ee9f8083bbd",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c151651fb6ed264038d486ea262e243af72e5e64",
+                "reference": "c151651fb6ed264038d486ea262e243af72e5e64",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -5836,7 +6077,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-10-18T09:02:52+00:00"
+            "time": "2018-10-23T05:57:41+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -6733,7 +6974,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "shelwei/qrcode-terminal": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

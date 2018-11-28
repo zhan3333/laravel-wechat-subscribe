@@ -9,21 +9,17 @@
 namespace App\Http\Controllers;
 
 
+use App\Jobs\DownloadMeiziImage;
 use App\Models\User;
 use App\Models\UserWechat;
 use App\Models\WechatAutoReceive;
 use App\Models\WechatMessage;
-use EasyWeChat\Kernel\Messages\Image;
-use EasyWeChat\Kernel\Messages\Message;
 use EasyWeChat\OfficialAccount\Application;
-use GuzzleHttp\Client;
-use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use PHPHtmlParser\Dom;
-use PHPQRCode\Constants;
-use Shelwei\QRCode;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class WechatController extends Controller
 {
@@ -45,22 +41,16 @@ class WechatController extends Controller
             $msg = collect($message);
             $this->register($msg);
             if ($msg->get('MsgType') == 'text') {
-                if ($msg->get('Content') == 'm') {
-                    $imgs = $this->getMeiziImgs();
-                    // media_id
-                    // url
-                    Log::debug('img', [$imgs]);
-//                    $client = new Client(['verify' => false]);  //忽略SSL错误
-//                    $client->get($img, ['save_to' => $savePath]);  //保存远程url到文件
-//                    $uploadRes = $wechat->material->uploadImage($savePath);
-//                    Log::debug('$uploadRes', [$uploadRes]);
-//                    return new Image('FJggVYI2YxOOv8gvHG7R6O01ON1ZngXARg1TblkzA-P2rhK8G2KQ58BV24nP3s8m');
-//                    return $img;
-                    $res = '';
-                    foreach ($imgs as $key => $img) {
-                        $res .= "<a href=\"$img\">图片 {$key}</a>  ";
+                if ($msg->get('Content') == 's') {
+                    foreach (range(2, 144) as $page) {
+                        if (!Storage::disk('public')->has("meizi/$page.jpg")) {
+                            DownloadMeiziImage::dispatch($page);
+                        }
                     }
-                    return $res;
+                    return 'download...';
+                }
+                if ($msg->get('Content') == 'm') {
+                    return $this->getRandomImg();
                 }
 
                 $res = WechatAutoReceive::where('receive', $msg->get('Content'))->inRandomOrder()->value('send');
@@ -76,6 +66,7 @@ class WechatController extends Controller
                 // PicUrl
 
                 $base64Img = base64_encode(\Requests::get($msg->get('PicUrl'))->body);
+                Log::debug('base64 file length', [(strlen($base64Img) - strlen($base64Img) / 4) / 1024 . ' kb']);
                 $queryRes = $this->getImgText($base64Img);
                 Log::debug('base64', [$base64Img, $msg->get('PicUrl'), $queryRes]);
                 $resStr = '';
@@ -97,6 +88,13 @@ class WechatController extends Controller
         return $response;
     }
 
+
+    private function getRandomImg()
+    {
+        $images = Storage::disk('public')->files('meizi');
+        $randomImgUrl = asset('storage/' . array_random($images));
+        return "<a href='$randomImgUrl'>(。・∀・)ノ</a>";
+    }
 
     private function register(Collection $msg)
     {
@@ -174,26 +172,5 @@ class WechatController extends Controller
         }
     }
 
-    private function getMeiziImgs()
-    {
-        $randomPage = random_int(1, 34);
 
-        $dom = $this->getMeiziHtml($randomPage);
-        $comments = $dom->find('.post-grid');
-        $imgs = [];
-        foreach ($comments as $comment) {
-            $img = $comment->find('img', 0)->getAttribute('src');
-            $img = str_replace('-548x300', '', $img);
-            $imgs[] = $img;
-        }
-        // get random page
-        return $imgs;
-    }
-
-    private function getMeiziHtml($page = 1)
-    {
-        $dom = new Dom();
-        $dom->loadFromUrl("https://qingbuyaohaixiu.com/page/$page");
-        return $dom;
-    }
 }

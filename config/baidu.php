@@ -6,6 +6,7 @@
 
 return [
 
+    // Can't use file cache driver, token ttl is 30 days
     // Doc: https://aip.baidubce.com/oauth/2.0/token
     'token' => [
         'url' => 'https://aip.baidubce.com/oauth/2.0/token',
