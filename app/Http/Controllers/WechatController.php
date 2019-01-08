@@ -66,10 +66,18 @@ class WechatController extends Controller
                 // PicUrl
 
                 $base64Img = base64_encode(\Requests::get($msg->get('PicUrl'))->body);
-                Log::debug('base64 file length', [(strlen($base64Img) - strlen($base64Img) / 4) / 1024 . ' kb']);
+                $imgLength = (strlen($base64Img) - strlen($base64Img) / 4) / 1024 / 1024;
+                if ($imgLength > 4) return '😁 图片大小不可以超过4MB哦~';
+                Log::debug('base64 file length', [(strlen($base64Img) - strlen($base64Img) / 4) / 1024 / 1024 . ' MB']);
                 $queryRes = $this->getImgText($base64Img);
-                Log::debug('base64', [$base64Img, $msg->get('PicUrl'), $queryRes]);
                 $resStr = '';
+                Log::debug('query res', [$msg->get('PicUrl'), $queryRes]);
+                if ($queryRes->get('error_code')) {
+                    // error
+                    $resStr = $queryRes->get('error_code') . PHP_EOL . $queryRes->get('error_msg') . PHP_EOL .
+                        "识别发生了错误, 如果你有时间的话, 请联系微信号/QQ/手机: 13517210601 提交错误, 谢谢你啦 😝";
+                    return $resStr;
+                }
                 foreach ($queryRes->get('words_result') as $key => $item) {
                     if ($key) {
                         $resStr .= "\n{$item['words']}";
@@ -77,7 +85,7 @@ class WechatController extends Controller
                         $resStr .= "{$item['words']}";
                     }
                 }
-
+                if (empty($resStr)) $resStr = "😥 可能未找到可识别的文字...";
                 return $resStr;
             }
             return $msg->toJson();
@@ -163,8 +171,9 @@ class WechatController extends Controller
         $client_secret = config('baidu.token.client_secret');
         $response = \Requests::post("$url?grant_type=$grant_type&client_id=$client_id&client_secret=$client_secret");
         $res = collect(json_decode($response->body, true));
+        Log::debug('get baidu token', [$res]);
         if ($res->has('access_token')) {
-            Cache::set('baidu_token', $res->get('access_token'), $res->get('expires_in', 0));
+            Cache::put('baidu_token', $res->get('access_token'), $res->get('expires_in') / 60);
             return $res->get('access_token');
         } else {
             Log::error('get baidu token error', [$res->toArray()]);
