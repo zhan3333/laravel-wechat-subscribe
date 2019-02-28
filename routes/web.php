@@ -12,5 +12,5 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return '订阅号: 画眉在杏枝唱歌';
 });
