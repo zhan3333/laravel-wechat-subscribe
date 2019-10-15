@@ -86,7 +86,7 @@ class WechatController extends Controller
                     if (empty($resStr)) $resStr = "😥 可能未找到可识别的文字...";
                     return $resStr;
                 } catch (\Exception $exception) {
-                    $resStr = $exception->getMessage()  . PHP_EOL .
+                    $resStr = $exception->getMessage() . PHP_EOL .
                         "程序发生了异常, 如果你有时间的话, 请联系微信号/QQ/手机: 13517210601 提交错误, 谢谢你啦 😝";
                     return $resStr;
                 }
@@ -99,7 +99,6 @@ class WechatController extends Controller
 
         return $response;
     }
-
 
     private function getRandomImg()
     {
@@ -184,6 +183,5 @@ class WechatController extends Controller
             throw new \Exception("get baidu token error, {$res->toJson()}");
         }
     }
-
 
 }

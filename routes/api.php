@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -15,5 +13,3 @@ use Illuminate\Http\Request;
 //
 
 Route::any('/wechat', 'WechatController@serve');
-
-Route::any('/test', 'WechatController@test');
