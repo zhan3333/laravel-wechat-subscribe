@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Exceptions\Handler;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -30,7 +31,7 @@ class DownloadMeiziImage implements ShouldQueue
      */
     public function __construct($page = null)
     {
-        $this->page = $page ? $page: random_int(2, 144);
+        $this->page = $page ? $page : random_int(2, 144);
     }
 
     /**
@@ -44,14 +45,19 @@ class DownloadMeiziImage implements ShouldQueue
         try {
             if (!Storage::disk('public')->has("meizi/$page.jpg")) {
                 $imageUrls = $this->getMeiziImgs($page);
+                if (count($imageUrls) === 0) {
+                    \Log::debug("Page $page not find image");
+                    return;
+                }
 
                 $imgMinWidth = 9999999;  // 最小宽度
+                $images = [];
                 foreach ($imageUrls as $key => $img) {
                     \Log::debug("Downloading page: ($page) image $img...");
                     $image = Image::make($img);
                     $imgMinWidth = $image->width() < $imgMinWidth ? $image->width() : $imgMinWidth;
                     $images[] = $image;
-                    \Log::debug("Loading success!");
+                    \Log::debug('Loading success!');
                 }
                 $imgSumHeight = 0;
                 foreach ($images as $key => &$image) {
@@ -68,8 +74,8 @@ class DownloadMeiziImage implements ShouldQueue
                 $newImg->save(Storage::disk('public')->path("meizi/$page.jpg"));
             }
         } catch (\Exception $exception) {
-            \Log::debug("Loading fail!");
-            \Log::error($exception->getMessage());
+            app(Handler::class)->report($exception);
+            \Log::debug('Loading fail!');
         }
     }
 

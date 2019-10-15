@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Exceptions\Handler;
 use App\Jobs\DownloadMeiziImage;
 use App\Models\User;
 use App\Models\UserWechat;
@@ -19,18 +20,15 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\ImageManagerStatic as Image;
 
 class WechatController extends Controller
 {
     public function serve(Application $wechat)
     {
-        Log::debug('receive start ----');
-        /**
-         * @var Application $wechat
-         */
         $wechat->server->push(function ($message) use ($wechat) {
-            Log::info('wechat message', [collect($message)->toArray()]);
+            \Auth::setUser(User::where('name', $message['FromUserName'])->first());
+            $content = $message['Content'];
+            Log::info('wechat message', [$message]);
             // $message
             //  ToUserName
             //  FromUserName
@@ -40,8 +38,8 @@ class WechatController extends Controller
             //  MsgId
             $msg = collect($message);
             $this->register($msg);
-            if ($msg->get('MsgType') == 'text') {
-                if ($msg->get('Content') == 's') {
+            if ($msg->get('MsgType') === 'text') {
+                if ($msg->get('Content') === 's') {
                     foreach (range(2, 144) as $page) {
                         if (!Storage::disk('public')->has("meizi/$page.jpg")) {
                             DownloadMeiziImage::dispatch($page);
@@ -49,7 +47,7 @@ class WechatController extends Controller
                     }
                     return 'download...';
                 }
-                if ($msg->get('Content') == 'm') {
+                if ($msg->get('Content') === 'm') {
                     return $this->getRandomImg();
                 }
 
@@ -86,6 +84,7 @@ class WechatController extends Controller
                     if (empty($resStr)) $resStr = "😥 可能未找到可识别的文字...";
                     return $resStr;
                 } catch (\Exception $exception) {
+                    app(Handler::class)->report($exception);
                     $resStr = $exception->getMessage() . PHP_EOL .
                         "程序发生了异常, 如果你有时间的话, 请联系微信号/QQ/手机: 13517210601 提交错误, 谢谢你啦 😝";
                     return $resStr;
@@ -103,8 +102,12 @@ class WechatController extends Controller
     private function getRandomImg()
     {
         $images = Storage::disk('public')->files('meizi');
-        $randomImgUrl = asset('storage/' . array_random($images));
-        return "<a href='$randomImgUrl'>(。・∀・)ノ</a>";
+        if (count($images)) {
+            $randomImgUrl = asset('storage/' . array_random($images));
+            return "<a href='$randomImgUrl'>(。・∀・)ノ</a>";
+        } else {
+            return 'No img';
+        }
     }
 
     private function register(Collection $msg)
