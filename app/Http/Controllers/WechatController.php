@@ -27,7 +27,6 @@ class WechatController extends Controller
     {
         $wechat->server->push(function ($message) use ($wechat) {
             \Auth::setUser(User::where('name', $message['FromUserName'])->first());
-            $content = $message['Content'];
             Log::info('wechat message', [$message]);
             // $message
             //  ToUserName
@@ -52,14 +51,18 @@ class WechatController extends Controller
                 }
 
                 $res = WechatAutoReceive::where('receive', $msg->get('Content'))->inRandomOrder()->value('send');
-                if (!$res) $res = WechatAutoReceive::where('receive', 'default')->inRandomOrder()->value('send');
-                if (!$res) $res = '上传带文字的图片, 将会识别图片中文字.';
+                if (!$res) {
+                    $res = WechatAutoReceive::where('receive', 'default')->inRandomOrder()->value('send');
+                }
+                if (!$res) {
+                    $res = '上传带文字的图片, 将会识别图片中文字.';
+                }
                 return $res;
             }
-            if ($msg->get('MsgType') == 'event') {
+            if ($msg->get('MsgType') === 'event') {
                 return WechatAutoReceive::where('receive', 'default')->inRandomOrder()->value('send');
             }
-            if ($msg->get('MsgType') == 'image') {
+            if ($msg->get('MsgType') === 'image') {
                 try {
                     $base64Img = base64_encode(\Requests::get($msg->get('PicUrl'))->body);
                     $imgLength = (strlen($base64Img) - strlen($base64Img) / 4) / 1024 / 1024;
@@ -71,22 +74,24 @@ class WechatController extends Controller
                     if ($queryRes->get('error_code')) {
                         // error
                         $resStr = $queryRes->get('error_code') . PHP_EOL . $queryRes->get('error_msg') . PHP_EOL .
-                            "识别发生了错误, 如果你有时间的话, 请联系微信号/QQ/手机: 13517210601 提交错误, 谢谢你啦 😝";
+                            '识别发生了错误, 如果你有时间的话, 请联系微信号/QQ/手机: 13517210601 提交错误, 谢谢你啦 😝';
                         return $resStr;
                     }
                     foreach ($queryRes->get('words_result') as $key => $item) {
                         if ($key) {
                             $resStr .= "\n{$item['words']}";
                         } else {
-                            $resStr .= "{$item['words']}";
+                            $resStr .= $item['words'];
                         }
                     }
-                    if (empty($resStr)) $resStr = "😥 可能未找到可识别的文字...";
+                    if (empty($resStr)) {
+                        $resStr = '😥 可能未找到可识别的文字...';
+                    }
                     return $resStr;
                 } catch (\Exception $exception) {
                     app(Handler::class)->report($exception);
                     $resStr = $exception->getMessage() . PHP_EOL .
-                        "程序发生了异常, 如果你有时间的话, 请联系微信号/QQ/手机: 13517210601 提交错误, 谢谢你啦 😝";
+                        '程序发生了异常, 如果你有时间的话, 请联系微信号/QQ/手机: 13517210601 提交错误, 谢谢你啦 😝';
                     return $resStr;
                 }
 
@@ -94,9 +99,7 @@ class WechatController extends Controller
             return $msg->toJson();
         });
 
-        $response = $wechat->server->serve();
-
-        return $response;
+        return $wechat->server->serve();
     }
 
     private function getRandomImg()
